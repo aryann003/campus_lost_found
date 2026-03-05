@@ -1,0 +1,1 @@
+default_app_config = 'claims.apps.ClaimsConfig'
