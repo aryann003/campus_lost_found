@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Lost & Found Items - Campus Found{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero {
+  background: var(--gradient-hero);
+  padding: 5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin: 2rem;
+  border-radius: 12px;
+  color: white;
+}
+.hero h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  font-family: "Playfair Display", serif;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+  line-height: 1.1;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  letter-spacing: -1px;
+}
+.hero p {
+  font-size: 1.3rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.95;
+  font-weight: 500;
+}
+.search-wrapper {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 750px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.search-box {
+  flex: 1;
+  min-width: 300px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-box input {
+  width: 100%;
+  padding: 1.2rem 1.4rem 1.2rem 50px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--card-bg);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+  transition: all 0.4s;
+}
+.search-box input:focus {
+  outline: none;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+  transform: translateY(-4px);
+}
+.search-icon {
+  position: absolute;
+  left: 18px;
+  color: var(--primary-rust);
+  font-size: 1.2rem;
+}
+.search-submit {
+  padding: 1.2rem 2rem;
+  background: rgba(255,255,255,0.2);
+  border: 2px solid white;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+.search-submit:hover {
+  background: white;
+  color: var(--primary-rust);
+}
+.filters {
+  margin: 4rem auto;
+  max-width: 1200px;
+  padding: 0 2rem;
+}
+.filter-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--primary-rust);
+  padding-bottom: 0.75rem;
+  display: inline-block;
+}
+.filter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
+}
+.filter-group label {
+  display: block;
+  font-weight: 700;
+  color: var(--primary-rust);
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.filter-btn {
+  padding: 0.65rem 1.4rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: white;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-block;
+}
+.filter-btn:hover {
+  border-color: var(--primary-rust);
+  color: var(--primary-rust);
+  background: rgba(184,92,74,0.05);
+  transform: translateY(-2px);
+}
+.filter-btn.active {
+  background: var(--gradient-primary);
+  color: white;
+  border-color: var(--primary-rust);
+  font-weight: 700;
+  box-shadow: 0 8px 16px rgba(184,92,74,0.25);
+}
+.filter-btn.coral.active {
+  background: var(--gradient-mustard);
+  border-color: var(--accent-mustard);
+  box-shadow: 0 8px 16px rgba(201,169,97,0.25);
+}
+.active-filters {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.active-filter-tag {
+  background: rgba(184,92,74,0.1);
+  border: 1px solid var(--primary-rust);
+  color: var(--primary-rust);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.clear-filters {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.items-section {
+  margin: 0 auto 5rem;
+  max-width: 1200px;
+  padding: 0 2rem;
+}
+.items-header { margin-bottom: 3rem; }
+.items-header h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary-rust);
+  font-family: "Playfair Display", serif;
+  letter-spacing: -1px;
+}
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 2.5rem;
+}
+.item-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+  border: 2px solid var(--border-color);
+  position: relative;
+}
+.item-card:hover {
+  transform: translateY(-12px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-rust);
+}
+.item-image {
+  position: relative;
+  padding: 3rem;
+  text-align: center;
+  background: linear-gradient(135deg, #f5ebe0 0%, #edd5c1 100%);
+  border-bottom: 2px solid var(--border-color);
+}
+.item-type-badge {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  padding: 0.6rem 1.2rem;
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  box-shadow: 0 6px 12px rgba(184,92,74,0.3);
+}
+.item-type-badge.found {
+  background: var(--gradient-sage);
+  box-shadow: 0 6px 12px rgba(107,142,127,0.3);
+}
+.item-status-badge {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+  padding: 0.6rem 1.2rem;
+  background: var(--accent-mustard);
+  color: white;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  box-shadow: 0 6px 12px rgba(201,169,97,0.3);
+}
+.item-status-badge.claimed {
+  background: var(--accent-sage);
+  box-shadow: 0 6px 12px rgba(107,142,127,0.3);
+}
+.item-content { padding: 1.75rem; }
+.item-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  font-family: "Playfair Display", serif;
+}
+.item-meta {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.meta-item { display: flex; align-items: center; gap: 0.5rem; }
+.item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border-color);
+}
+.item-owner { font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
+.view-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  text-decoration: none;
+}
+.view-btn:hover { transform: scale(1.3) rotate(10deg); }
+@media (max-width: 768px) {
+  .hero { padding: 3rem 1.5rem; margin: 1rem; }
+  .hero h1 { font-size: 2.5rem; }
+  .hero p { font-size: 1.05rem; }
+  .filter-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .items-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Find What You Lost</h1>
+  <p>Browse lost and found items on campus. Connect with other students and recover your belongings.</p>
+  <form method="GET" action="">
+    <div class="search-wrapper">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" name="q" placeholder="Search items (e.g., airpods, jacket, keys)..." value="{{ request.GET.q }}" />
+      </div>
+      {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}">{% endif %}
+      {% if request.GET.type %}<input type="hidden" name="type" value="{{ request.GET.type }}">{% endif %}
+      <button type="submit" class="search-submit">Search</button>
+    </div>
+  </form>
+</div>
+
+<div class="filters">
+  <div class="filter-label">Refine Search</div>
+
+  {% if request.GET.q or request.GET.category or request.GET.type %}
+  <div class="active-filters">
+    <span style="font-size:0.85rem;color:var(--text-secondary);font-weight:600;">Active filters:</span>
+    {% if request.GET.q %}<span class="active-filter-tag">Search: "{{ request.GET.q }}"</span>{% endif %}
+    {% if request.GET.category %}<span class="active-filter-tag">Category: {{ selected_category_name }}</span>{% endif %}
+    {% if request.GET.type %}<span class="active-filter-tag">Type: {{ request.GET.type }}</span>{% endif %}
+    <a href="{% url 'home' %}" class="clear-filters">Clear all</a>
+  </div>
+  {% endif %}
+
+  <div class="filter-grid">
+    <div class="filter-group">
+      <label>Category</label>
+      <div class="filter-buttons">
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.type %}type={{ request.GET.type }}{% endif %}" class="filter-btn {% if not request.GET.category %}active{% endif %}">All</a>
+        {% for category in categories %}
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}category={{ category.id }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}" class="filter-btn {% if request.GET.category == category.id|stringformat:'s' %}active{% endif %}">{{ category.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label>Type</label>
+      <div class="filter-buttons">
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}{% endif %}" class="filter-btn coral {% if not request.GET.type %}active{% endif %}">All</a>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}type=Lost" class="filter-btn coral {% if request.GET.type == 'Lost' %}active{% endif %}">Lost</a>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}type=Found" class="filter-btn coral {% if request.GET.type == 'Found' %}active{% endif %}">Found</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="items-section">
+  <div class="items-header">
+    <h2>{{ items.count }} Item{{ items.count|pluralize }}</h2>
+  </div>
+  <div class="items-grid">
+    {% for item in items %}
+    <div class="item-card">
+      <div class="item-image">
+        <div class="item-type-badge {% if item.type == 'Found' %}found{% endif %}">{{ item.type }}</div>
+        <div class="item-status-badge {% if item.status == 'Claimed' %}claimed{% endif %}">{{ item.status }}</div>
+        {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item.title }}" style="max-width:100%;max-height:200px;object-fit:cover;" />
+        {% else %}
+        <div style="font-size:5rem;line-height:5rem;">📦</div>
+        {% endif %}
+      </div>
+      <div class="item-content">
+        <h3 class="item-title">{{ item.title }}</h3>
+        <div class="item-meta">
+          <div class="meta-item">📍 {{ item.location }}</div>
+          <div class="meta-item">📅 {{ item.date|date:"Y-m-d" }}</div>
+        </div>
+        <div class="item-footer">
+          <span class="item-owner">by {{ item.owner.get_full_name|default:item.owner.username }}</span>
+          <a href="{% url 'item_detail' item.id %}" class="view-btn" title="View details">👁️</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-secondary);">
+      <p style="font-size:1.1rem;">No items found. Try adjusting your filters.</p>
+      <a href="{% url 'home' %}" style="color:var(--primary-rust);font-weight:700;text-decoration:underline;">Clear filters</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

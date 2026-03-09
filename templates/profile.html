@@ -1,0 +1,384 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Campus Found{% endblock %}
+
+{% block extra_css %}
+<style>
+.profile-container {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+/* ---- LEFT CARD ---- */
+.profile-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--border-color);
+  text-align: center;
+  position: sticky;
+  top: 100px;
+}
+
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--primary-rust);
+  box-shadow: 0 8px 24px rgba(184,92,74,0.2);
+}
+
+.avatar-placeholder {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: white;
+  border: 4px solid var(--primary-rust);
+  box-shadow: 0 8px 24px rgba(184,92,74,0.2);
+  margin: 0 auto;
+}
+
+.avatar-edit-btn {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: var(--primary-rust);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.avatar-edit-btn:hover { background: #8b4a3a; transform: scale(1.1); }
+
+.profile-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-family: "Playfair Display", serif;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.profile-username {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border-color);
+}
+
+.stat-box {
+  background: rgba(184,92,74,0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--primary-rust);
+  font-family: "Playfair Display", serif;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.25rem;
+}
+
+/* ---- RIGHT PANEL ---- */
+.profile-panels { display: flex; flex-direction: column; gap: 2rem; }
+
+.panel {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--border-color);
+}
+
+.panel-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-family: "Playfair Display", serif;
+  color: var(--primary-rust);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.form-group { margin-bottom: 1.25rem; }
+.form-group label { display: block; font-weight: 700; color: var(--primary-rust); margin-bottom: 0.5rem; font-size: 0.9rem; }
+.form-group input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.3s;
+  background: white;
+}
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-rust);
+  box-shadow: 0 0 0 4px rgba(184,92,74,0.1);
+}
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.save-btn {
+  padding: 0.8rem 2rem;
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.save-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.success-message {
+  background: rgba(107,142,127,0.1);
+  border-left: 4px solid var(--accent-sage);
+  color: #2a4d42;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.error-message {
+  background: rgba(239,68,68,0.1);
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ---- POSTED ITEMS ---- */
+.posted-items-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.posted-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: rgba(184,92,74,0.03);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s;
+}
+.posted-item-row:hover { border-color: var(--primary-rust); background: rgba(184,92,74,0.06); }
+
+.posted-item-info h4 { font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem; font-size: 0.95rem; }
+.posted-item-info p { font-size: 0.82rem; color: var(--text-secondary); }
+
+.item-badges { display: flex; gap: 0.5rem; align-items: center; }
+
+.badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.badge-lost { background: var(--gradient-primary); color: white; }
+.badge-found { background: var(--gradient-sage); color: white; }
+.badge-open { background: rgba(201,169,97,0.2); color: #7d5d2b; }
+.badge-claimed { background: rgba(107,142,127,0.2); color: #2a4d42; }
+
+.view-link { color: var(--primary-rust); font-size: 1.2rem; text-decoration: none; transition: transform 0.2s; display: inline-block; }
+.view-link:hover { transform: scale(1.2); }
+
+.empty-posted {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-card { position: static; }
+  .form-row { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+  <div class="profile-grid">
+
+    <!-- LEFT: Avatar + Stats -->
+    <div class="profile-card">
+      <form method="POST" enctype="multipart/form-data" action="{% url 'profile' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="avatar">
+        <div class="avatar-wrapper">
+          {% if user.profile.avatar %}
+          <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="avatar" />
+          {% else %}
+          <div class="avatar-placeholder">{{ user.username|first|upper }}</div>
+          {% endif %}
+          <button type="button" class="avatar-edit-btn" onclick="document.getElementById('avatarInput').click()" title="Change photo">✏️</button>
+        </div>
+        <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display:none;" onchange="this.form.submit()">
+      </form>
+
+      <div class="profile-name">{{ user.get_full_name|default:user.username }}</div>
+      <div class="profile-username">@{{ user.username }}</div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-number">{{ total_items }}</div>
+          <div class="stat-label">Items Posted</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">{{ total_claims }}</div>
+          <div class="stat-label">Claims Made</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">{{ lost_items }}</div>
+          <div class="stat-label">Lost</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">{{ found_items }}</div>
+          <div class="stat-label">Found</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Panels -->
+    <div class="profile-panels">
+
+      <!-- Edit Profile -->
+      <div class="panel">
+        <div class="panel-title">Edit Profile</div>
+        {% if profile_success %}<div class="success-message">Profile updated successfully!</div>{% endif %}
+        {% if profile_error %}<div class="error-message">{{ profile_error }}</div>{% endif %}
+        <form method="POST" action="{% url 'profile' %}">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="profile">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="first_name">First Name</label>
+              <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" />
+            </div>
+            <div class="form-group">
+              <label for="last_name">Last Name</label>
+              <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" />
+          </div>
+          <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+      </div>
+
+      <!-- Change Password -->
+      <div class="panel">
+        <div class="panel-title">Change Password</div>
+        {% if password_success %}<div class="success-message">Password changed successfully!</div>{% endif %}
+        {% if password_error %}<div class="error-message">{{ password_error }}</div>{% endif %}
+        <form method="POST" action="{% url 'profile' %}">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="password">
+          <div class="form-group">
+            <label for="current_password">Current Password</label>
+            <input type="password" id="current_password" name="current_password" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="new_password">New Password</label>
+              <input type="password" id="new_password" name="new_password" />
+            </div>
+            <div class="form-group">
+              <label for="confirm_password">Confirm Password</label>
+              <input type="password" id="confirm_password" name="confirm_password" />
+            </div>
+          </div>
+          <button type="submit" class="save-btn">Change Password</button>
+        </form>
+      </div>
+
+      <!-- My Posted Items -->
+      <div class="panel">
+        <div class="panel-title">My Posted Items</div>
+        {% if posted_items %}
+        <div class="posted-items-list">
+          {% for item in posted_items %}
+          <div class="posted-item-row">
+            <div class="posted-item-info">
+              <h4>{{ item.title }}</h4>
+              <p>📍 {{ item.location }} &nbsp;|&nbsp; 📅 {{ item.date|date:"M d, Y" }}</p>
+            </div>
+            <div class="item-badges">
+              <span class="badge {% if item.type == 'Lost' %}badge-lost{% else %}badge-found{% endif %}">{{ item.type }}</span>
+              <span class="badge {% if item.status == 'Claimed' %}badge-claimed{% else %}badge-open{% endif %}">{{ item.status }}</span>
+              <a href="{% url 'item_detail' item.id %}" class="view-link" title="View">👁️</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-posted">
+          <p style="font-size:2rem;">📭</p>
+          <p>You haven't posted any items yet.</p>
+          <a href="{% url 'post_item' %}" style="color:var(--primary-rust);font-weight:700;">Post your first item</a>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

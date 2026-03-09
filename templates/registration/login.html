@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Campus Found{% endblock %}
+
+{% block extra_css %}
+<style>
+  .login-container {
+    max-width: 500px;
+    margin: 4rem auto;
+    padding: 0 2rem;
+  }
+
+  .login-card {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--border-color);
+  }
+
+  .login-card h1 {
+    font-size: 2rem;
+    font-family: "Playfair Display", serif;
+    color: var(--primary-rust);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 700;
+    color: var(--primary-rust);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--primary-rust);
+    box-shadow: 0 0 0 4px rgba(184, 92, 74, 0.1);
+  }
+
+  .login-button {
+    width: 100%;
+    padding: 1rem;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 1rem;
+  }
+
+  .login-button:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .test-accounts {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-color);
+    color: var(--text-secondary);
+  }
+
+  .error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid #ef4444;
+    color: #991b1b;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <div class="login-card">
+    <h1>Login</h1>
+
+    {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+        <div class="error-message">{{ error }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="id_username">Username</label>
+        <input type="text" id="id_username" name="username" required autofocus />
+      </div>
+
+      <div class="form-group">
+        <label for="id_password">Password</label>
+        <input type="password" id="id_password" name="password" required />
+      </div>
+
+      <button type="submit" class="login-button">Login</button>
+    </form>
+
+    <div class="test-accounts">
+      <h4>Test Accounts:</h4>
+      <p><strong>testuser1</strong> / test123</p>
+      <p><strong>testuser2</strong> / test123</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

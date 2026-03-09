@@ -10,6 +10,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'password']
 
+    def validate_email(self,value):
+        if not value.endswith('@kiet.edu'):
+            raise serializers.ValidationError("Only college email addresses are allowed.")
+        return value
+
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
