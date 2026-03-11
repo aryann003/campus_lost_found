@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
 
 User = get_user_model()
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -12,14 +12,11 @@ class Category(models.Model):
 
 
 class Item(models.Model):
-
-    # Choices for type field
     TYPE_CHOICES = [
         ('Lost', 'Lost'),
         ('Found', 'Found'),
     ]
 
-    # Choices for status field
     STATUS_CHOICES = [
         ('Open', 'Open'),
         ('Claimed', 'Claimed'),
@@ -38,7 +35,8 @@ class Item(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)

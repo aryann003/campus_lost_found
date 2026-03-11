@@ -106,13 +106,8 @@
       }
 
       @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-8px);
-        }
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
       }
 
       .navbar-brand-text h1 {
@@ -166,69 +161,25 @@
         z-index: -1;
       }
 
-      .nav-btn-rust {
-        border-color: var(--primary-rust);
-        color: var(--primary-rust);
-      }
-      .nav-btn-rust::before {
-        background: var(--primary-rust);
-      }
-      .nav-btn-rust:hover,
-      .nav-btn-rust.active {
-        color: white;
-      }
-      .nav-btn-rust:hover::before,
-      .nav-btn-rust.active::before {
-        left: 0;
-      }
+      .nav-btn-rust { border-color: var(--primary-rust); color: var(--primary-rust); }
+      .nav-btn-rust::before { background: var(--primary-rust); }
+      .nav-btn-rust:hover, .nav-btn-rust.active { color: white; }
+      .nav-btn-rust:hover::before, .nav-btn-rust.active::before { left: 0; }
 
-      .nav-btn-mustard {
-        border-color: var(--accent-mustard);
-        color: var(--accent-mustard);
-      }
-      .nav-btn-mustard::before {
-        background: var(--accent-mustard);
-      }
-      .nav-btn-mustard:hover,
-      .nav-btn-mustard.active {
-        color: white;
-      }
-      .nav-btn-mustard:hover::before,
-      .nav-btn-mustard.active::before {
-        left: 0;
-      }
+      .nav-btn-mustard { border-color: var(--accent-mustard); color: var(--accent-mustard); }
+      .nav-btn-mustard::before { background: var(--accent-mustard); }
+      .nav-btn-mustard:hover, .nav-btn-mustard.active { color: white; }
+      .nav-btn-mustard:hover::before, .nav-btn-mustard.active::before { left: 0; }
 
-      .nav-btn-sage {
-        border-color: var(--accent-sage);
-        color: var(--accent-sage);
-      }
-      .nav-btn-sage::before {
-        background: var(--accent-sage);
-      }
-      .nav-btn-sage:hover,
-      .nav-btn-sage.active {
-        color: white;
-      }
-      .nav-btn-sage:hover::before,
-      .nav-btn-sage.active::before {
-        left: 0;
-      }
+      .nav-btn-sage { border-color: var(--accent-sage); color: var(--accent-sage); }
+      .nav-btn-sage::before { background: var(--accent-sage); }
+      .nav-btn-sage:hover, .nav-btn-sage.active { color: white; }
+      .nav-btn-sage:hover::before, .nav-btn-sage.active::before { left: 0; }
 
-      .nav-btn-mauve {
-        border-color: var(--accent-mauve);
-        color: var(--accent-mauve);
-      }
-      .nav-btn-mauve::before {
-        background: var(--accent-mauve);
-      }
-      .nav-btn-mauve:hover,
-      .nav-btn-mauve.active {
-        color: white;
-      }
-      .nav-btn-mauve:hover::before,
-      .nav-btn-mauve.active::before {
-        left: 0;
-      }
+      .nav-btn-mauve { border-color: var(--accent-mauve); color: var(--accent-mauve); }
+      .nav-btn-mauve::before { background: var(--accent-mauve); }
+      .nav-btn-mauve:hover, .nav-btn-mauve.active { color: white; }
+      .nav-btn-mauve:hover::before, .nav-btn-mauve.active::before { left: 0; }
 
       .nav-icon {
         cursor: pointer;
@@ -237,11 +188,111 @@
         padding: 0.5rem;
         border-radius: 50%;
         transition: all 0.3s;
+        position: relative;
       }
 
       .nav-icon:hover {
         background: rgba(184, 92, 74, 0.1);
         transform: scale(1.2) rotate(15deg);
+      }
+
+      .notif-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: var(--primary-rust);
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 0.65rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+      }
+
+      /* ==================== PROFILE DROPDOWN ==================== */
+      .profile-dropdown {
+        position: relative;
+      }
+
+      .profile-dropdown-trigger {
+        cursor: pointer;
+      }
+
+      .profile-dropdown-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 0.6rem);
+        right: 0;
+        background: var(--card-bg);
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+        min-width: 200px;
+        z-index: 200;
+        overflow: hidden;
+        animation: dropIn 0.2s ease;
+      }
+
+      @keyframes dropIn {
+        from { opacity: 0; transform: translateY(-8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      .profile-dropdown:hover .profile-dropdown-menu {
+        display: block;
+      }
+
+      .dropdown-header {
+        padding: 0.9rem 1.2rem;
+        background: linear-gradient(135deg, rgba(184,92,74,0.08), rgba(155,123,123,0.08));
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .dropdown-header span {
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: var(--primary-rust);
+        display: block;
+      }
+
+      .dropdown-header small {
+        font-size: 0.75rem;
+        color: var(--text-light);
+      }
+
+      .profile-dropdown-menu a {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.75rem 1.2rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: background 0.2s, color 0.2s;
+        text-decoration: none;
+      }
+
+      .profile-dropdown-menu a:hover {
+        background: rgba(184, 92, 74, 0.07);
+        color: var(--primary-rust);
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background: var(--border-color);
+        margin: 0.2rem 0;
+      }
+
+      .dropdown-logout {
+        color: var(--primary-rust) !important;
+        font-weight: 700 !important;
+      }
+
+      .dropdown-logout:hover {
+        background: rgba(184, 92, 74, 0.12) !important;
       }
 
       /* ==================== FOOTER ==================== */
@@ -257,9 +308,7 @@
       .footer::before {
         content: "";
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
+        top: 0; left: 0; right: 0;
         height: 3px;
         background: var(--primary-rust);
       }
@@ -293,13 +342,8 @@
         border-radius: 2px;
       }
 
-      .footer-section ul {
-        list-style: none;
-      }
-
-      .footer-section ul li {
-        margin-bottom: 0.85rem;
-      }
+      .footer-section ul { list-style: none; }
+      .footer-section ul li { margin-bottom: 0.85rem; }
 
       .footer-section ul a {
         color: rgba(255, 255, 255, 0.8);
@@ -337,55 +381,25 @@
 
       /* ==================== RESPONSIVE ==================== */
       @media (max-width: 768px) {
-        .navbar {
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .navbar-brand-text h1 {
-          font-size: 1.4rem;
-        }
-
-        .navbar-nav {
-          flex-wrap: wrap;
-          justify-content: center;
-          width: 100%;
-        }
-
-        .nav-btn {
-          padding: 0.5rem 1rem;
-          font-size: 0.8rem;
-          flex: 1;
-          min-width: 100px;
-        }
-
-        .footer-content {
-          grid-template-columns: 1fr;
-          gap: 2rem;
-        }
+        .navbar { flex-direction: column; gap: 1.5rem; }
+        .navbar-brand-text h1 { font-size: 1.4rem; }
+        .navbar-nav { flex-wrap: wrap; justify-content: center; width: 100%; }
+        .nav-btn { padding: 0.5rem 1rem; font-size: 0.8rem; flex: 1; min-width: 100px; }
+        .footer-content { grid-template-columns: 1fr; gap: 2rem; }
+        .profile-dropdown-menu { right: auto; left: 0; }
       }
 
       /* ==================== SCROLLBAR ==================== */
-      ::-webkit-scrollbar {
-        width: 12px;
-      }
-      ::-webkit-scrollbar-track {
-        background: var(--light-bg);
-      }
-      ::-webkit-scrollbar-thumb {
-        background: var(--primary-rust);
-        border-radius: 6px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #8b4a3a;
-      }
+      ::-webkit-scrollbar { width: 12px; }
+      ::-webkit-scrollbar-track { background: var(--light-bg); }
+      ::-webkit-scrollbar-thumb { background: var(--primary-rust); border-radius: 6px; }
+      ::-webkit-scrollbar-thumb:hover { background: #8b4a3a; }
     </style>
 
     {% block extra_css %}{% endblock %}
   </head>
   <body>
     <!-- NAVBAR -->
-    <a href="{% url 'profile' %}" class="nav-btn nav-btn-mauve">👤 {{ request.user.username }}</a>
     <nav class="navbar">
       <a href="{% url 'home' %}" class="navbar-brand">
         <div class="navbar-brand-logo">📍</div>
@@ -394,34 +408,62 @@
           <p>Lost & Found Hub</p>
         </div>
       </a>
+
       <div class="navbar-nav">
-        <a
-          href="{% url 'home' %}"
-          class="nav-btn nav-btn-rust {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
-        >
+        <a href="{% url 'home' %}"
+           class="nav-btn nav-btn-rust {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
           🔍 Browse
         </a>
-        <a
-          href="{% url 'post_item' %}"
-          class="nav-btn nav-btn-mustard {% if request.resolver_match.url_name == 'post_item' %}active{% endif %}"
-        >
+        <a href="{% url 'post_item' %}"
+           class="nav-btn nav-btn-mustard {% if request.resolver_match.url_name == 'post_item' %}active{% endif %}">
           ➕ Post
         </a>
-        <a
-          href="{% url 'my_claims' %}"
-          class="nav-btn nav-btn-sage {% if request.resolver_match.url_name == 'my_claims' %}active{% endif %}"
-        >
+        <a href="{% url 'my_claims' %}"
+           class="nav-btn nav-btn-sage {% if request.resolver_match.url_name == 'my_claims' %}active{% endif %}">
           ✓ Claims
         </a>
         {% if request.user.role == 'admin' %}
-        <a
-          href="{% url 'admin_dashboard' %}"
-          class="nav-btn nav-btn-mauve {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
-        >
+        <a href="{% url 'admin_dashboard' %}"
+           class="nav-btn nav-btn-mauve {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
           📊 Admin
         </a>
         {% endif %}
-        <div class="nav-icon" title="Notifications">🔔</div>
+
+        <!-- Notification Bell -->
+        <a href="{% url 'notifications' %}" class="nav-icon" title="Notifications">
+          🔔
+          {% if unread_notifications > 0 %}
+          <span class="notif-badge">{{ unread_notifications }}</span>
+          {% endif %}
+        </a>
+
+        <!-- Profile Dropdown with Logout -->
+        {% if request.user.is_authenticated %}
+        <div class="profile-dropdown">
+          <div class="nav-btn nav-btn-mauve profile-dropdown-trigger">
+            👤 {{ request.user.username }} ▾
+          </div>
+          <div class="profile-dropdown-menu">
+            <div class="dropdown-header">
+              <span>{{ request.user.username }}</span>
+              <small>{{ request.user.email }}</small>
+            </div>
+            <a href="{% url 'profile' %}">👤 My Profile</a>
+            <a href="{% url 'my_claims' %}">✓ My Claims</a>
+            <a href="{% url 'notifications' %}">
+              🔔 Notifications
+              {% if unread_notifications > 0 %}
+                <span style="margin-left:auto;background:var(--primary-rust);color:white;border-radius:10px;padding:0.1rem 0.5rem;font-size:0.7rem;">{{ unread_notifications }}</span>
+              {% endif %}
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="{% url 'logout' %}" class="dropdown-logout">🚪 Logout</a>
+          </div>
+        </div>
+        {% else %}
+        <a href="{% url 'login' %}" class="nav-btn nav-btn-rust">🔑 Login</a>
+        <a href="{% url 'register' %}" class="nav-btn nav-btn-mustard">📝 Register</a>
+        {% endif %}
       </div>
     </nav>
 
@@ -457,10 +499,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>
-          &copy; 2026 Campus Lost & Found. Built with ❤️ by students, for
-          students.
-        </p>
+        <p>&copy; 2026 Campus Lost & Found. Built with ❤️ by students, for students.</p>
       </div>
     </footer>
 

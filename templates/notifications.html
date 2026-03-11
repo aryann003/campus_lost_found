@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - Campus Found{% endblock %}
+
+{% block extra_css %}
+<style>
+.notif-container {
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.notif-header h1 {
+  font-size: 2.2rem;
+  font-family: "Playfair Display", serif;
+  color: var(--primary-rust);
+}
+
+.mark-all-btn {
+  padding: 0.6rem 1.4rem;
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.mark-all-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.notif-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.notif-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.notif-card.unread {
+  border-left: 4px solid var(--primary-rust);
+  background: rgba(184,92,74,0.03);
+}
+
+.notif-card:hover { box-shadow: var(--shadow-md); transform: translateX(4px); }
+
+.notif-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(184,92,74,0.08);
+}
+
+.notif-body { flex: 1; }
+
+.notif-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.notif-message {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.notif-time {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  margin-top: 0.4rem;
+  font-weight: 600;
+}
+
+.unread-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--primary-rust);
+  border-radius: 50%;
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  flex-shrink: 0;
+}
+
+.notif-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--primary-rust);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+}
+
+.empty-state-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+.empty-state h2 { font-size: 1.4rem; color: var(--text-primary); margin-bottom: 0.5rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notif-container">
+  <div class="notif-header">
+    <h1>Notifications
+      {% if unread_count %}
+      <span style="font-size:1rem;background:var(--primary-rust);color:white;border-radius:20px;padding:0.2rem 0.7rem;margin-left:0.5rem;font-family:Poppins,sans-serif;">{{ unread_count }}</span>
+      {% endif %}
+    </h1>
+    {% if notifications %}
+    <a href="{% url 'mark_all_read' %}" class="mark-all-btn">Mark all as read</a>
+    {% endif %}
+  </div>
+
+  {% if notifications %}
+  <div class="notif-list">
+    {% for notif in notifications %}
+    <a href="{% url 'mark_read' notif.id %}{% if notif.item %}?next={% url 'item_detail' notif.item.id %}{% endif %}" style="text-decoration:none;">
+      <div class="notif-card {% if not notif.is_read %}unread{% endif %}">
+        <div class="notif-icon">
+          {% if notif.notif_type == 'claim_received' %}🙋
+          {% elif notif.notif_type == 'claim_approved' %}✅
+          {% elif notif.notif_type == 'claim_rejected' %}❌
+          {% elif notif.notif_type == 'item_match' %}🔍
+          {% elif notif.notif_type == 'item_deleted' %}🗑️
+          {% else %}🔔
+          {% endif %}
+        </div>
+        <div class="notif-body">
+          <div class="notif-title">{{ notif.title }}</div>
+          <div class="notif-message">{{ notif.message }}</div>
+          <div class="notif-time">{{ notif.created_at|timesince }} ago</div>
+        </div>
+        {% if not notif.is_read %}<div class="unread-dot"></div>{% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">🔔</div>
+    <h2>No Notifications</h2>
+    <p>You're all caught up! Notifications will appear here.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
