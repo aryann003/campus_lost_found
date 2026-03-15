@@ -372,7 +372,16 @@
         </div>
         <div class="item-footer">
           <span class="item-owner">by {{ item.owner.get_full_name|default:item.owner.username }}</span>
-          <a href="{% url 'item_detail' item.id %}" class="view-btn" title="View details">👁️</a>
+          <div style="display:flex;align-items:center;gap:0.6rem;">
+            <a href="{% url 'item_detail' item.id %}" class="view-btn" title="View details">👁️</a>
+            {% if request.user == item.owner %}
+            <form method="post" action="{% url 'item_detail' item.id %}" onsubmit="return confirm('Delete this item? This cannot be undone.');">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="delete_item" />
+              <button type="submit" class="view-btn" title="Delete item" style="font-size:1.2rem;line-height:1;">🗑️</button>
+            </form>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>

@@ -20,7 +20,7 @@
   padding: 3rem;
   text-align: center;
   font-size: 6rem;
-  background: linear-gradient(135deg, #f5ebe0 0%, #edd5c1 100%);
+  background: var(--gradient-hero);
   border-bottom: 2px solid var(--border-color);
 }
 .item-detail-content { padding: 2.5rem; }
@@ -43,12 +43,115 @@
 .meta-group p { color: var(--text-secondary); font-size: 1.1rem; }
 .item-detail-description { margin: 2rem 0; line-height: 1.8; color: var(--text-primary); }
 .item-detail-owner {
-  background: rgba(184, 92, 74, 0.05);
+  background: rgba(59, 130, 246, 0.08);
   padding: 1.5rem;
   border-radius: 8px;
   margin-top: 2rem;
 }
 .owner-name { color: var(--primary-rust); font-weight: 700; font-size: 1.1rem; }
+.claim-section {
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: rgba(17, 24, 39, 0.7);
+}
+.claim-section h3 { color: var(--text-primary); margin-bottom: 0.75rem; }
+.claim-section p { color: var(--text-secondary); }
+.claim-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+.claim-alert.success { background: rgba(20, 184, 166, 0.15); color: #22d3ee; border: 1px solid #22d3ee; }
+.claim-alert.error { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid #ef4444; }
+.claim-alert.info { background: rgba(59, 130, 246, 0.12); color: var(--text-primary); border: 1px solid var(--primary-rust); }
+.claim-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.claim-form textarea, .claim-form input[type="file"] {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+.claim-form button {
+  align-self: flex-start;
+  padding: 0.9rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--gradient-primary);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.claim-form button:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.match-section {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  background: rgba(15, 23, 42, 0.65);
+}
+.match-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.match-card {
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+}
+.match-card h4 { margin-bottom: 0.4rem; color: var(--text-primary); }
+.match-meta { color: var(--text-secondary); font-size: 0.9rem; }
+.match-link { color: var(--primary-rust); font-weight: 700; text-decoration: underline; }
+.owner-claims {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  background: rgba(17, 24, 39, 0.7);
+}
+.owner-claim-card {
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+  margin-top: 0.75rem;
+}
+.owner-claim-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+.owner-claim-card p { color: var(--text-secondary); margin: 0.25rem 0; }
+.claim-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.claim-actions button {
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.claim-badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.claim-badge.pending { background: rgba(201,169,97,0.18); color: var(--accent-mustard); }
+.claim-badge.approved { background: rgba(20,184,166,0.18); color: #22d3ee; }
+.claim-badge.rejected { background: rgba(239,68,68,0.18); color: #f87171; }
+.btn-approve { background: var(--accent-sage); color: white; }
+.btn-reject { background: #ef4444; color: white; }
 .back-button {
   display: inline-block;
   margin-bottom: 2rem;
@@ -107,6 +210,112 @@
       <div class="item-detail-owner">
         <p style="color:var(--text-secondary);margin-bottom:0.5rem;">Posted by</p>
         <p class="owner-name">{{ item.owner.get_full_name|default:item.owner.username }}</p>
+        {% if request.user == item.owner %}
+        <form method="post" onsubmit="return confirm('Delete this item? This cannot be undone.');" style="margin-top:0.8rem;display:inline-block;">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="delete_item" />
+          <button type="submit" class="btn-reject" style="border:none;">Delete item</button>
+        </form>
+        {% endif %}
+      </div>
+
+      {% if matches %}
+      <div class="match-section">
+        <h3 style="color:var(--text-primary);margin-bottom:0.6rem;">Possible matches</h3>
+        <p class="match-meta" style="margin-bottom:0.8rem;">Based on title, description keywords, and location.</p>
+        <div class="match-grid">
+          {% for match in matches %}
+          <div class="match-card">
+            <h4>{{ match.title }}</h4>
+            <div class="match-meta">📍 {{ match.location }} · {{ match.date|date:"M d, Y" }}</div>
+            <div class="match-meta">Type: {{ match.type }}</div>
+            <a href="{% url 'item_detail' match.id %}" class="match-link">View item</a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if request.user == item.owner %}
+      <div class="owner-claims">
+        <h3 style="color:var(--text-primary);">Manage claims</h3>
+        <p style="color:var(--text-secondary);margin-bottom:0.5rem;">Approve or reject claims for this item.</p>
+        {% if owner_action_message %}
+        <div class="claim-alert success">{{ owner_action_message }}</div>
+        {% endif %}
+
+        {% if owner_claims %}
+          {% for claim in owner_claims %}
+          <div class="owner-claim-card">
+            <header>
+              <strong style="color:var(--text-primary);">{{ claim.claimant.username }}</strong>
+              <span class="claim-badge {{ claim.status|lower }}">{{ claim.status }}</span>
+            </header>
+            <p>{{ claim.proof_description }}</p>
+            {% if claim.proof_image %}
+            <p><a href="{{ claim.proof_image.url }}" target="_blank" class="match-link">View proof image</a></p>
+            {% endif %}
+            <p style="font-size:0.85rem;color:var(--text-light);">Submitted {{ claim.created_at|date:"M d, Y" }}</p>
+
+            {% if claim.status == 'Pending' %}
+            <div class="claim-actions">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve_claim" />
+                <input type="hidden" name="claim_id" value="{{ claim.id }}" />
+                <button type="submit" class="btn-approve">Approve</button>
+              </form>
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject_claim" />
+                <input type="hidden" name="claim_id" value="{{ claim.id }}" />
+                <button type="submit" class="btn-reject">Reject</button>
+              </form>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="claim-alert info">No claims submitted yet.</div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="claim-section">
+        <h3>Claim this item</h3>
+        <p>Provide details that prove this item is yours. The owner will review your claim.</p>
+
+        {% if claim_success %}
+        <div class="claim-alert success">Claim submitted! Track it in <a href="{% url 'my_claims' %}" style="text-decoration:underline;color:inherit;">My Claims</a>.</div>
+        {% elif claim_error %}
+        <div class="claim-alert error">{{ claim_error }}</div>
+        {% endif %}
+
+        {% if item.status == 'Claimed' %}
+          <div class="claim-alert info">This item is already marked as claimed.</div>
+        {% elif not request.user.is_authenticated %}
+          <div class="claim-alert info">
+            Please <a href="{% url 'login' %}?next={{ request.path }}" style="color:inherit;text-decoration:underline;">log in</a> to submit a claim.
+          </div>
+        {% elif request.user == item.owner %}
+          <div class="claim-alert info">You posted this item, so you can't submit a claim.</div>
+        {% elif existing_claim %}
+          <div class="claim-alert info">You already submitted a claim on {{ existing_claim.created_at|date:"M d, Y" }}.</div>
+        {% else %}
+          <form method="post" enctype="multipart/form-data" class="claim-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="claim" />
+            <div>
+              <label for="proof_description" style="display:block;font-weight:700;margin-bottom:0.4rem;color:var(--text-primary);">Proof details</label>
+              <textarea id="proof_description" name="proof_description" rows="4" placeholder="Describe why this item is yours (unique marks, purchase info, etc.)" required></textarea>
+            </div>
+            <div>
+              <label for="proof_image" style="display:block;font-weight:700;margin-bottom:0.4rem;color:var(--text-primary);">Attach proof (optional)</label>
+              <input type="file" id="proof_image" name="proof_image" accept="image/*" />
+            </div>
+            <button type="submit">Submit claim</button>
+          </form>
+        {% endif %}
       </div>
     </div>
   </div>

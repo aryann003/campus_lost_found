@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.db.models import Q
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets, permissions, filters
 from rest_framework.decorators import action
@@ -11,7 +13,7 @@ from .permissions import IsOwnerOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from claims.models import Claim, Notification
 from django.contrib.auth.models import User
-from .notifications_helper import notify_claim_approved, notify_claim_rejected, notify_item_deleted
+from .notifications_helper import notify_claim_approved, notify_claim_rejected, notify_item_deleted, send_notification
 
 
 # ==================== TEMPLATE VIEWS ====================
@@ -25,6 +27,12 @@ def user_login(request):
             login(request, user)
             return redirect('home')
     return render(request, 'registration/login.html')
+
+
+def user_logout(request):
+    """Log out the user and send them home."""
+    logout(request)
+    return redirect('home')
 
 
 def home(request):
@@ -98,7 +106,109 @@ def my_claims(request):
 
 def item_detail(request, item_id):
     item = get_object_or_404(Item, id=item_id)
-    return render(request, 'item_detail.html', {'item': item})
+    claim_error = None
+    claim_success = False
+    existing_claim = None
+    matches = []
+    owner_action_message = None
+
+    # quick on-page matching preview using the same scoring as the API action
+    opposite_type = 'Found' if item.type == 'Lost' else 'Lost'
+    candidates = Item.objects.filter(
+        category=item.category,
+        type=opposite_type,
+        status='Open'
+    ).exclude(pk=item.pk)
+
+    keywords = [w for w in item.title.lower().split() if len(w) >= 4]
+    keywords += [w for w in item.description.lower().split() if len(w) >= 4]
+
+    scored = []
+    for candidate in candidates:
+        score = 0
+        for kw in keywords:
+            if kw in candidate.title.lower():
+                score += 2
+        for kw in keywords:
+            if kw in candidate.description.lower():
+                score += 1
+        if item.location and candidate.location and item.location.lower() == candidate.location.lower():
+            score += 3
+        scored.append((score, candidate))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    matches = [candidate for score, candidate in scored[:3] if score > 0]
+
+    if request.user.is_authenticated:
+        existing_claim = Claim.objects.filter(item=item, claimant=request.user).first()
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'claim':
+            if not request.user.is_authenticated:
+                return redirect(f"{reverse('login')}?next={request.path}")
+
+            proof_description = request.POST.get('proof_description', '').strip()
+            proof_image = request.FILES.get('proof_image')
+
+            if item.owner == request.user:
+                claim_error = "You can't claim an item you posted."
+            elif item.status == 'Claimed':
+                claim_error = "This item has already been marked as claimed."
+            elif existing_claim:
+                claim_error = "You already submitted a claim for this item."
+            elif not proof_description:
+                claim_error = "Please provide details that prove the item is yours."
+            else:
+                existing_claim = Claim.objects.create(
+                    item=item,
+                    claimant=request.user,
+                    proof_description=proof_description,
+                    proof_image=proof_image
+                )
+                from .notifications_helper import notify_claim_received
+                notify_claim_received(item, request.user)
+                claim_success = True
+        elif action == 'delete_item' and request.user == item.owner:
+            title = item.title
+            claimants = list(Claim.objects.filter(item=item).select_related('claimant'))
+            item.delete()
+            for c in claimants:
+                send_notification(
+                    user=c.claimant,
+                    notif_type='item_deleted',
+                    title='Item removed',
+                    message=f'The item "{title}" you claimed was removed by its owner.',
+                    item=None,
+                )
+            messages.success(request, f'Item "{title}" deleted.')
+            return redirect('home')
+        elif action in ['approve_claim', 'reject_claim'] and request.user == item.owner:
+            claim_obj = get_object_or_404(Claim, id=request.POST.get('claim_id'), item=item)
+            if action == 'approve_claim':
+                Claim.objects.filter(item=item).exclude(pk=claim_obj.pk).update(status='Rejected')
+                claim_obj.status = 'Approved'
+                claim_obj.save()
+                item.status = 'Claimed'
+                item.save(update_fields=['status'])
+                notify_claim_approved(claim_obj)
+                owner_action_message = "Claim approved and item marked as Claimed."
+            else:
+                claim_obj.status = 'Rejected'
+                claim_obj.save()
+                notify_claim_rejected(claim_obj)
+                owner_action_message = "Claim rejected."
+
+    context = {
+        'item': item,
+        'claim_error': claim_error,
+        'claim_success': claim_success,
+        'existing_claim': existing_claim,
+        'matches': matches,
+        'owner_claims': item.claims.select_related('claimant').order_by('-created_at') if request.user == item.owner else [],
+        'owner_action_message': owner_action_message,
+    }
+    return render(request, 'item_detail.html', context)
 
 
 @login_required(login_url='login')
@@ -174,7 +284,17 @@ def admin_dashboard(request):
         if action == 'delete_item':
             item_id = request.POST.get('item_id')
             item = Item.objects.get(id=item_id)
-            notify_item_deleted(item.owner, item.title)
+            title = item.title
+            claimants = list(Claim.objects.filter(item=item).select_related('claimant'))
+            notify_item_deleted(item.owner, title)
+            for c in claimants:
+                send_notification(
+                    user=c.claimant,
+                    notif_type='item_deleted',
+                    title='Item removed',
+                    message=f'The item "{title}" you claimed was removed by an admin.',
+                    item=None,
+                )
             item.delete()
             message = 'Item deleted successfully.'
 

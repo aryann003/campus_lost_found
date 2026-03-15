@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="auth-card">
+  <div class="auth-header">
+    <h2>Create your account</h2>
+    <p>One minute to start tracking your campus lost & found items.</p>
+  </div>
+
+  <form method="post" class="auth-form">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-control">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+          <small class="help-text">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="error">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    {% if form.non_field_errors %}
+      <div class="error-list">
+        {% for error in form.non_field_errors %}
+          <div class="error">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <button type="submit" class="nav-btn nav-btn-mustard" style="width:100%;">Create account</button>
+  </form>
+
+  <p style="text-align:center;margin-top:1rem;">
+    Already registered?
+    <a href="{% url 'login' %}">Log in</a>
+  </p>
+</section>
+{% endblock %}

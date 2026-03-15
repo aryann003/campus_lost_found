@@ -3,9 +3,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
-from items.views import ItemViewSet, CategoryViewSet, home, post_item, my_claims, item_detail, user_login, profile, admin_dashboard,notifications_view, mark_read, mark_all_read
+from items.views import ItemViewSet, CategoryViewSet, home, post_item, my_claims, item_detail, user_login, user_logout, profile, admin_dashboard,notifications_view, mark_read, mark_all_read
 from claims.views import ClaimViewSet, NotificationViewSet
-from users.views import RegisterView
+from users.views import RegisterView, register
 
 router = DefaultRouter()
 router.register(r'items', ItemViewSet, basename='item')
@@ -24,6 +24,10 @@ urlpatterns = [
     
     # Authentication
     path('login/', user_login, name='login'),
+    path('logout/', user_logout, name='logout'),
+    path('accounts/logout/', user_logout),  # allow legacy/logout URL with GET
+    path('register/', register, name='register'),
+    path('accounts/profile/', profile),  # catch Django default redirect
     path('accounts/', include('django.contrib.auth.urls')),
     
     # Template Routes
